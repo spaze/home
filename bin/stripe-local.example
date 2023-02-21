@@ -1,3 +1,0 @@
-#!/bin/bash
-
-stripe listen --forward-to https://local.example/webhook/path
