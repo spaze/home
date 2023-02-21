@@ -1,5 +1,0 @@
-#!/bin/sh
-
-DIR=/tmp/michalspacek.cz
-mkdir --parents $DIR
-chmod o+w $DIR
