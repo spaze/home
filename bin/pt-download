@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <days> <dir>, example: $0 30 ptlogs"
+    return 1
+fi
+
+TOKEN_HEADER=$(echo $(cat ~/.papertrail.yml) | grep "token:" | sed s/token:/X-Papertrail-Token:/)
+START=$(date --utc --date="$1 days ago" +%Y-%m-%d)
+echo "Fetching logs for the last $1 days from $START"
+mkdir --parents $2
+
+curl --silent --header "$TOKEN_HEADER" https://papertrailapp.com/api/v1/archives.json |
+  grep -o '"filename":"[^"]*"' | egrep -o '[0-9-]+' |
+  awk "\$0 >= \"$START\" {
+    print \"output $2/\" \$0 \".tsv.gz\"
+    print \"url https://papertrailapp.com/api/v1/archives/\" \$0 \"/download\"
+  }" | curl --progress-bar --fail --location --header "$TOKEN_HEADER" --config -
+
+echo "uncompressing"
+gzip --stdout --uncompress $2/*.tsv.gz > $2/pt-$START.tsv

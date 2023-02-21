@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <exceptionfile>, example: $0 exception--2020-01-09--05-21.log"
+    return 1
+fi
+
+papertrail --min-time "1 month ago" "program:$1" > $1
+
+if [[ -s "$1" ]]; then
+    echo "$1"
+else
+    echo 'file empty, deleting'
+    rm "$1"
+fi

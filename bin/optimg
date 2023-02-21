@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Optimize images for talk slides
+# Run in directory with images, it does the following:
+# 1. runs zopfli on all PNGs
+# 2. runs guetzli on all JPEGs
+# 3. creates lossy and lossless WebP, keeps the smaller one
+# 4. keeps the WebP if smaller than original
+
+GREEN=$(tput setaf 2)
+NORMAL=$(tput sgr0)
+
+echo "${GREEN}Running Zopfli on all PNGs${NORMAL}"
+for I in *.png; do /opt/zopfli/zopflipng --iterations=50 --splitting=3 --lossy_8bit --lossy_transparent -y "$I" "$I"; done;
+echo "${GREEN}Running Guetzli on all JPEGs${NORMAL}"
+for I in *.jpg; do /opt/guetzli/guetzli "$I" "$I"; done;
+
+
+for I in *.{png,jpg}; do
+
+    FILE_LOSSY=${I%.*}-lossy.webp
+    FILE_LOSSLESS=${I%.*}-lossless.webp
+
+    echo -e "\n* ${GREEN}Converting ${I} to lossy WebP${NORMAL}"
+    /opt/webp/bin/cwebp -m 6 -mt -noalpha "$I" -o "$FILE_LOSSY";
+    echo "* ${GREEN}Converting ${I} to lossless WebP${NORMAL}"
+    /opt/webp/bin/cwebp -m 6 -mt -noalpha -lossless "$I" -o "$FILE_LOSSLESS";
+
+    SIZE_ORIG=$(wc -c <"$I")
+    SIZE_LOSSY=$(wc -c <"$FILE_LOSSY")
+    SIZE_LOSSLESS=$(wc -c <"$FILE_LOSSLESS")
+
+    if [[ "$SIZE_LOSSLESS" -le "$SIZE_LOSSY" ]]; then
+        echo "* ${GREEN}Lossless WebP is smaller than lossy, deleting lossy${NORMAL}"
+        BEST_WEBP=$FILE_LOSSLESS
+        rm "$FILE_LOSSY"
+    else
+        echo "* ${GREEN}Lossy WebP is smaller than lossless, deleting lossless${NORMAL}"
+        BEST_WEBP=$FILE_LOSSY
+        rm "$FILE_LOSSLESS"
+    fi
+
+    SIZE_WEBP=$(wc -c <"$BEST_WEBP")
+    if [[ "$SIZE_ORIG" -le "$SIZE_WEBP" ]]; then
+        echo "* ${GREEN}Original ${I} is smaller than WebP, deleting WebP${NORMAL}"
+        rm "$BEST_WEBP"
+    else
+        echo "* ${GREEN}WebP is smaller than the original, keeping both WebP and the original${NORMAL}"
+        mv "$BEST_WEBP" "${I%.*}.webp"
+    fi
+done;
+

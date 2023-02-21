@@ -1,0 +1,24 @@
+#!/bin/sh
+
+COUNT="${1:-6}"
+LANGUAGE="${2:-en}"
+DIR=~/.config/diceware
+PREFIX=diceware.wordlist
+FILE=$DIR/$PREFIX.$LANGUAGE.txt
+# Get the files from for example diceware.com which redirects to https://theworld.com/~reinhold/diceware.html
+
+if [ ! -f "$FILE" ]; then
+    echo "$FILE doesn't exists, available files:"
+    ls -1 $DIR/$PREFIX.*
+    exit 1
+fi
+
+grep \
+    --perl-regexp \
+    "^\d{5}" \
+    $FILE \
+|
+shuf \
+    --random-source=/dev/urandom \
+    --repeat \
+    --head-count $COUNT

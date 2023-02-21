@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "This is now located in ~ngrok-autostart/bin/ngrok-local.example and executed from ~ngrok-autostart/.profile"
+exit 1
+
+ngrok start --all
+
+# ngrok \
+#     http \
+#     localhttp.example:80 \
+#     -host-header localhttp.example \
+#     -subdomain=example \
+#     -region eu

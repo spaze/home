@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <domain>, example: $0 example.com.test"
+    return 1
+fi
+
+GREEN=$(tput setaf 2)
+DARKER_GREEN=$(tput setaf 22)  # will only work with TERM=xterm-256color
+NORMAL=$(tput sgr0)
+
+DOMAIN=$(basename $1)
+echo "${GREEN}Creating a new certificate signing request for ${DARKER_GREEN}${DOMAIN}${NORMAL}"
+
+CAROOT="/etc/ssl/CA/"
+CSRFILE="certs/${DOMAIN}.csr"
+cd $CAROOT
+DOMAIN_UNDERSCORE=`echo $DOMAIN | sed s/\\\./_/g`
+sudo openssl req -sha256 -new -key private/${DOMAIN}.key -reqexts alt_names_${DOMAIN_UNDERSCORE} -subj "/C=CZ/ST=Prague/L=Prague/O=${DOMAIN}/OU=foo<img src=x onerror=alert(1)>bar/CN=${DOMAIN}<img src=x onerror=alert(2)>/emailAddress=foo@example.com" -out certs/${DOMAIN}.csr
+sudo chmod 444 ${CSRFILE}
+
+echo "${GREEN}CSR saved to ${DARKER_GREEN}${CAROOT}${CSRFILE}${NORMAL}"

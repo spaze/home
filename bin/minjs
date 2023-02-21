@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ ! -f "$1" ]; then
+    echo "$1 doesn't exist"
+    return 1
+fi
+
+OUT=$(echo $1 |sed 's/\.js$/.min.js/')
+
+curl --data-urlencode "js_code@$1" --data "output_info=compiled_code" --data "output_format=json" https://closure-compiler.appspot.com/compile | jq --join-output .compiledCode > $OUT

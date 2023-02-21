@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <domain>, example: $0 example.com.test"
+    return 1
+fi
+
+GREEN=$(tput setaf 2)
+DARKER_GREEN=$(tput setaf 22)  # will only work with TERM=xterm-256color
+NORMAL=$(tput sgr0)
+
+DOMAIN=$(basename $1)
+echo "${GREEN}Renewing a certificate for ${DARKER_GREEN}${DOMAIN}${NORMAL}"
+
+CAROOT="/etc/ssl/CA/"
+CERTFILE="certs/${DOMAIN}.crt"
+cd $CAROOT
+DOMAIN_UNDERSCORE=`echo $DOMAIN | sed s/\\\./_/g`
+sudo openssl ca -policy policy_anything -extensions alt_names_${DOMAIN_UNDERSCORE} -out ${CERTFILE} -infiles certs/${DOMAIN}.csr
+sudo chmod 444 ${CERTFILE}
+
+echo "${GREEN}Cert renewed and saved to ${DARKER_GREEN}${CAROOT}${CERTFILE}${NORMAL}"
+
+echo "${GREEN}Reloading nginx configuration${NORMAL}"
+sudo service nginx reload
