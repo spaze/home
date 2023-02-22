@@ -1,0 +1,1 @@
+alias hh=hstr
