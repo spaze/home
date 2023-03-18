@@ -7,13 +7,15 @@
 # 3. creates lossy and lossless WebP, keeps the smaller one
 # 4. keeps the WebP if smaller than original
 
+# Requires zopfli, guetzli, webp packages.
+
 GREEN=$(tput setaf 2)
 NORMAL=$(tput sgr0)
 
 echo "${GREEN}Running Zopfli on all PNGs${NORMAL}"
-for I in *.png; do /opt/zopfli/zopflipng --iterations=50 --splitting=3 --lossy_8bit --lossy_transparent -y "$I" "$I"; done;
+for I in *.png; do zopflipng --iterations=50 --splitting=3 --lossy_8bit --lossy_transparent -y "$I" "$I"; done;
 echo "${GREEN}Running Guetzli on all JPEGs${NORMAL}"
-for I in *.jpg; do /opt/guetzli/guetzli "$I" "$I"; done;
+for I in *.jpg; do guetzli "$I" "$I"; done;
 
 
 for I in *.{png,jpg}; do
@@ -22,9 +24,9 @@ for I in *.{png,jpg}; do
     FILE_LOSSLESS=${I%.*}-lossless.webp
 
     echo -e "\n* ${GREEN}Converting ${I} to lossy WebP${NORMAL}"
-    /opt/webp/bin/cwebp -m 6 -mt -noalpha "$I" -o "$FILE_LOSSY";
+    cwebp -m 6 -mt -noalpha "$I" -o "$FILE_LOSSY";
     echo "* ${GREEN}Converting ${I} to lossless WebP${NORMAL}"
-    /opt/webp/bin/cwebp -m 6 -mt -noalpha -lossless "$I" -o "$FILE_LOSSLESS";
+    cwebp -m 6 -mt -noalpha -lossless "$I" -o "$FILE_LOSSLESS";
 
     SIZE_ORIG=$(wc -c <"$I")
     SIZE_LOSSY=$(wc -c <"$FILE_LOSSY")
