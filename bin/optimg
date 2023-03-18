@@ -12,6 +12,8 @@
 GREEN=$(tput setaf 2)
 NORMAL=$(tput sgr0)
 
+shopt -s nullglob
+
 echo "${GREEN}Running Zopfli on all PNGs${NORMAL}"
 for I in *.png; do zopflipng --iterations=50 --splitting=3 --lossy_8bit --lossy_transparent -y "$I" "$I"; done;
 echo "${GREEN}Running Guetzli on all JPEGs${NORMAL}"
