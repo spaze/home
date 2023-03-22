@@ -19,3 +19,5 @@ diff_color_highlight() {
 alias diff='diff_color_highlight'
 
 alias hh=hstr
+
+alias ll='exa --long --all --color-scale --time-style=long-iso --classify'
