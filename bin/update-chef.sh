@@ -19,25 +19,25 @@ DIR_INDEX="CyberChef.html"
 
 if [[ $DIR != /srv/www/* ]]; then
     echo "Oops, $DIR is not a safe dir to deploy CyberChef to"
-    exit 1;
+    exit 1
 fi
 
 cd $DIR || (echo "$DIR doesn't exist"; exit 3)
 
 echo "Purging $DIR"
-rm -rf $DIR
+rm -rf "$DIR"
 
 echo "Downloading $REPO $LATEST to $DIR"
-gh release download --repo $REPO $LATEST
+gh release download --repo "$REPO" "$LATEST"
 
 echo "Extracting $ZIP"
-unzip $ZIP > /dev/null
+unzip "$ZIP" > /dev/null
 
 echo "Deleting $ZIP"
-rm $ZIP
+rm "$ZIP"
 
 echo "Renaming $HTML_LATEST to $DIR_INDEX"
-mv $HTML_LATEST $DIR_INDEX
+mv "$HTML_LATEST" "$DIR_INDEX"
 
 echo "Done"
 cd - || (echo "Cannot cd -"; exit 4)
