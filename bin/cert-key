@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <domain>, example: $0 example.com.test"
+    return 1
+fi
+
+GREEN=$(tput setaf 2)
+DARKER_GREEN=$(tput setaf 22)  # will only work with TERM=xterm-256color
+NORMAL=$(tput sgr0)
+
+DOMAIN=$(basename $1)
+echo "${GREEN}Creating a new private key for ${DARKER_GREEN}${DOMAIN}${NORMAL}"
+
+CAROOT="/etc/ssl/CA/"
+KEYFILE="private/${DOMAIN}.key"
+cd $CAROOT
+sudo openssl ecparam -genkey -name secp256r1 -out ${KEYFILE}
+
+echo "${GREEN}Private key saved to ${DARKER_GREEN}${CAROOT}${KEYFILE}${NORMAL}"
