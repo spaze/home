@@ -1,15 +1,40 @@
-#!/bin/sh
+#!/bin/bash
 
-COUNT="${1:-6}"
-LANGUAGE="${2:-en}"
+COUNT="$1"
+LANGUAGE="$2"
 DIR=~/.config/diceware
 PREFIX=diceware.wordlist
-FILE=$DIR/$PREFIX.$LANGUAGE.txt
-# Get the files from for example diceware.com which redirects to https://theworld.com/~reinhold/diceware.html
+EXTENSION=txt
 
+if ! hash gum &> /dev/null; then
+    echo "Requires gum, get it at https://github.com/charmbracelet/gum"
+    exit 3
+fi
+
+if [ $# == 0 ]; then
+    echo -e '{{ Color "#D7B" "Select a few random words from files at '"$DIR"'" }}\nGet the files from https://theworld.com/~reinhold/diceware.html for example\nRun from command line as '"$0"' [count] [language]\n' | gum format --type template
+fi
+
+if [ -z "$COUNT" ]; then
+    COUNT=$(gum choose --header "How many words?" --selected 2 {1..6})
+fi
+if [ -z "$COUNT" ]; then
+    echo '{{ Color "#AFA" "Choose a count to continue" }}' | gum format --type template
+    exit 1
+fi
+
+if [ -z "$LANGUAGE" ]; then
+    LANGUAGE=$(gum choose --header "$PREFIX.?.$EXTENSION" --selected en $(ls -1 $DIR | grep --only-matching --perl-regexp "(?<=$PREFIX.)\w+(?=.$EXTENSION)"))
+fi
+if [ -z "$LANGUAGE" ]; then
+    echo '{{ Color "#AFA" "Pick a language to continue" }}' | gum format --type template
+    exit 2
+fi
+
+FILE=$DIR/$PREFIX.$LANGUAGE.$EXTENSION
 if [ ! -f "$FILE" ]; then
     echo "$FILE doesn't exists, available files:"
-    ls -1 $DIR/$PREFIX.*
+    ls -1 $DIR/$PREFIX.*.$EXTENSION
     exit 1
 fi
 
