@@ -20,4 +20,4 @@ alias diff='diff_color_highlight'
 
 alias hh=hstr
 
-alias ll='eza --long --all --color-scale --time-style=long-iso --classify'
+alias ll='eza --long --all --color-scale=all --time-style=long-iso --classify'
