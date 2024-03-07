@@ -1,0 +1,4 @@
+#!/bin/bash
+THIS_DIR=$(dirname $(realpath "$0"))
+WRITE_OUT_CONFIG=$(realpath "$THIS_DIR/../config/curltiming-format.txt")
+curl --write-out "@$WRITE_OUT_CONFIG" --output /dev/null --silent "$@"
