@@ -1,4 +1,48 @@
-#!/bin/bash
-THIS_DIR=$(dirname $(realpath "$0"))
-WRITE_OUT_CONFIG=$(realpath "$THIS_DIR/../config/curltiming-format.txt")
-curl --write-out "@$WRITE_OUT_CONFIG" --output /dev/null --silent "$@"
+#!/usr/bin/env php
+<?php
+declare(strict_types = 1);
+
+$url = $_SERVER['argv'][1] ?? null;
+if ($url === null) {
+	echo "Usage: {$_SERVER['argv'][0]} url\n";
+	exit(1);
+}
+
+$ch = curl_init();
+curl_setopt_array($ch, [
+	CURLOPT_URL => $url,
+	CURLOPT_HEADER => false,
+	CURLOPT_RETURNTRANSFER => true,
+	CURLOPT_FOLLOWLOCATION => true,
+	CURLOPT_ENCODING => '', // If an empty string is set, a header containing all supported encoding types is sent
+]);
+$output = curl_exec($ch);
+if ($output === false) {
+	printf('Error: %s [%d]', curl_error($ch), curl_errno($ch));
+	exit(2);
+}
+
+$outputLength = strlen($output);
+$info = curl_getinfo($ch);
+
+echo <<< EOT
+Shows just curl timing, no other output
+
+http_code: $info[http_code]
+requested url: $url
+effective url: $info[url]
+redirect_count: $info[redirect_count]
+primary_ip: $info[primary_ip]
+content_type: $info[content_type]
+output length: $outputLength
+size_download: $info[size_download] (possibly compressed)
+
+namelookup_time:    $info[namelookup_time]s
+connect_time:       $info[connect_time]s
+pretransfer_time:   $info[pretransfer_time]s
+starttransfer_time: $info[starttransfer_time]s
+redirect_time:      $info[redirect_time]s
+----------
+total_time: $info[total_time]s
+
+EOT;
