@@ -2,17 +2,14 @@
 
 DIR=/srv/www/cyberchef/
 
-if ! hash jq 2>/dev/null; then
-    echo "jq is required but it's not installed"
-    exit 2
-fi
 if ! hash gh 2>/dev/null; then
     echo "gh is required but it's not installed, see https://cli.github.com/"
     exit 2
 fi
 
 REPO=gchq/CyberChef
-LATEST=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq .tag_name --raw-output)
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+LATEST="v$("$SCRIPT_DIR"/github-latest-tag.sh "$REPO")"
 ZIP="CyberChef_$LATEST.zip"
 HTML_LATEST="CyberChef_$LATEST.html"
 DIR_INDEX="CyberChef.html"
