@@ -19,7 +19,7 @@ if [[ $DIR != /srv/www/* ]]; then
     exit 1
 fi
 
-cd $DIR || (echo "$DIR doesn't exist"; exit 3)
+cd $DIR || exit 3
 
 echo "Purging $DIR"
 rm -rf "$DIR"
@@ -37,4 +37,4 @@ echo "Renaming $HTML_LATEST to $DIR_INDEX"
 mv "$HTML_LATEST" "$DIR_INDEX"
 
 echo "Done"
-cd - || (echo "Cannot cd -"; exit 4)
+cd - || exit 4
