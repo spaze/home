@@ -7,6 +7,10 @@ if ! hash gh 2>/dev/null; then
     exit 2
 fi
 
+if hash gitleaks 2>/dev/null; then
+    echo "You have $(gitleaks --version)"
+fi
+
 REPO=gitleaks/gitleaks
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LATEST="$("$SCRIPT_DIR"/github-latest-tag.sh "$REPO")"
