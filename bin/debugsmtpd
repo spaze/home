@@ -1,3 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo python -m smtpd -n -c DebuggingServer localhost:25
+# If a virtual environment doesn't exist yet,
+# it will be created and aiosmtpd will be installed.
+# To update aiosmtpd just delete the directory
+# and recreate the virtual environment.
+
+
+DIR=~/.venv/aiosmtpd
+PORT=2525
+
+if ! [ -f $DIR/pyvenv.cfg ]; then
+	echo "Creating a virtual environment in $DIR"
+	python -m venv $DIR
+	echo "Installing aiosmtpd"
+	$DIR/bin/pip install aiosmtpd
+fi
+
+echo "# Listening on port $PORT"
+$DIR/bin/aiosmtpd --nosetuid --listen ":$PORT"
