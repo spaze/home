@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Prints a visual separator which is useful when scrolling through a long terminal history to find something
+
+if ! hash gum &> /dev/null; then
+    echo "Requires gum, get it at https://github.com/charmbracelet/gum"
+    exit 3
+fi
+
+gum style SEPARATOR --padding=10 --border=thick --width=41 --align="center" --foreground="#0F0" --border-foreground="#070" --italic
