@@ -1,4 +1,5 @@
 alias cdd='cd ~/desktop'
+alias cddl='cd ~/downloads'
 alias cdh='cd ~/htdocs'
 alias cdl='cd ~/libs'
 alias cdm='cd ~/michalspacek'
