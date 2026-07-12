@@ -1,0 +1,2 @@
+# For spaze/stupid-git-deploy to use ssh.exe instead of ssh on WSL
+[ -n "${WSL_DISTRO_NAME:-}" ] && export STUPID_GIT_DEPLOY_SSH=ssh.exe
